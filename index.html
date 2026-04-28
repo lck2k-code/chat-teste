@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatFlow - Chat em Tempo Real</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        dark: { 900: '#07070f', 800: '#0c0c18', 700: '#131325', 600: '#1c1c36', 500: '#262647' },
+                        accent: { DEFAULT: '#8B5CF6', light: '#A78BFA', dark: '#7C3AED', glow: 'rgba(139,92,246,0.3)' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-900 text-white font-sans min-h-screen overflow-hidden">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2"></div>
+
+    <!-- ==================== HOME VIEW ==================== -->
+    <div id="view-home" class="view active min-h-screen flex flex-col items-center justify-center p-4 relative">
+        <!-- Background Orbs -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+
+        <div class="relative z-10 text-center mb-12 animate-fade-in">
+            <div class="inline-flex items-center gap-3 mb-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-purple-400 flex items-center justify-center shadow-lg shadow-accent-glow">
+                    <i data-lucide="message-circle" class="w-8 h-8 text-white"></i>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-purple-200 to-accent-light bg-clip-text text-transparent">
+                    ChatFlow
+                </h1>
+            </div>
+            <p class="text-gray-400 text-lg md:text-xl max-w-md mx-auto">Chat em tempo real, simples e seguro. Crie ou entre em uma sala e comece a conversar.</p>
+        </div>
+
+        <div class="relative z-10 flex flex-col sm:flex-row gap-6 w-full max-w-2xl animate-fade-in-up">
+            <!-- Create Chat Card -->
+            <button onclick="showView('create')" class="group flex-1 glass-card p-8 rounded-3xl cursor-pointer transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:shadow-accent-glow text-left">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-purple-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-accent/20">
+                    <i data-lucide="plus-circle" class="w-8 h-8 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Criar Chat</h2>
+                <p class="text-gray-400">Crie uma nova sala de chat e convide seus amigos</p>
+                <div class="mt-6 flex items-center gap-2 text-accent-light group-hover:gap-3 transition-all duration-300">
+                    <span class="font-semibold">Começar</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </button>
+
+            <!-- Join Chat Card -->
+            <button onclick="showView('join')" class="group flex-1 glass-card p-8 rounded-3xl cursor-pointer transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:shadow-cyan-500/20 text-left">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-cyan-500/20">
+                    <i data-lucide="log-in" class="w-8 h-8 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Entrar no Chat</h2>
+                <p class="text-gray-400">Entre em uma sala existente com o nome da sala</p>
+                <div class="mt-6 flex items-center gap-2 text-cyan-400 group-hover:gap-3 transition-all duration-300">
+                    <span class="font-semibold">Entrar</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </button>
+        </div>
+
+        <p class="relative z-10 mt-8 text-gray-500 text-sm animate-fade-in">Comunicação em tempo real • Mensagens temporárias • Seguro</p>
+    </div>
+
+    <!-- ==================== CREATE ROOM VIEW ==================== -->
+    <div id="view-create" class="view min-h-screen flex items-center justify-center p-4 relative">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-md animate-fade-in-up">
+            <button onclick="showView('home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group">
+                <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
+                <span>Voltar</span>
+            </button>
+
+            <div class="glass-card rounded-3xl p-8">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-purple-400 flex items-center justify-center">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Criar Sala</h2>
+                </div>
+                <p class="text-gray-400 mb-8">Configure sua sala de chat</p>
+
+                <form id="form-create" onsubmit="handleCreateRoom(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Seu Nome</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="text" id="create-username" required minlength="2" maxlength="20"
+                                class="input-field w-full pl-11 pr-4 py-3 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                placeholder="Digite seu nome">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Nome da Sala</label>
+                        <div class="relative">
+                            <i data-lucide="hash" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="text" id="create-roomname" required minlength="2" maxlength="30"
+                                class="input-field w-full pl-11 pr-4 py-3 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                placeholder="Nome da sala">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-3">Tipo da Sala</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="room-type-btn active cursor-pointer">
+                                <input type="radio" name="room-type" value="public" checked class="hidden">
+                                <div class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-transparent transition-all">
+                                    <i data-lucide="globe" class="w-6 h-6"></i>
+                                    <span class="font-medium text-sm">Pública</span>
+                                </div>
+                            </label>
+                            <label class="room-type-btn cursor-pointer">
+                                <input type="radio" name="room-type" value="private" class="hidden">
+                                <div class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-transparent transition-all">
+                                    <i data-lucide="lock" class="w-6 h-6"></i>
+                                    <span class="font-medium text-sm">Privada</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="create-password-field" class="hidden">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Senha da Sala</label>
+                        <div class="relative">
+                            <i data-lucide="key" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="password" id="create-password" minlength="4" maxlength="30"
+                                class="input-field w-full pl-11 pr-4 py-3 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                placeholder="Senha para entrar na sala">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-accent to-purple-400 text-white font-semibold text-lg hover:shadow-lg hover:shadow-accent-glow transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+                        Criar Sala
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JOIN ROOM VIEW ==================== -->
+    <div id="view-join" class="view min-h-screen flex items-center justify-center p-4 relative">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-3"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-md animate-fade-in-up">
+            <button onclick="showView('home')" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group">
+                <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
+                <span>Voltar</span>
+            </button>
+
+            <div class="glass-card rounded-3xl p-8">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                        <i data-lucide="log-in" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Entrar na Sala</h2>
+                </div>
+                <p class="text-gray-400 mb-8">Insira os dados para entrar</p>
+
+                <form id="form-join" onsubmit="handleJoinRoom(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Seu Nome</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="text" id="join-username" required minlength="2" maxlength="20"
+                                class="input-field w-full pl-11 pr-4 py-3 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                placeholder="Digite seu nome">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Nome da Sala</label>
+                        <div class="relative">
+                            <i data-lucide="hash" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="text" id="join-roomname" required minlength="2" maxlength="30"
+                                class="input-field w-full pl-11 pr-4 py-3 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                placeholder="Nome da sala">
+                        </div>
+                    </div>
+
+                    <div id="join-password-wrapper">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Senha da Sala <span id="join-password-optional" class="text-gray-500 text-xs">(se a sala for privada)</span></label>
+                        <div class="relative">
+                            <i data-lucide="key" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+                            <input type="password" id="join-password"
+                                class="input-field w-full pl-11 pr-4 py-3 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                placeholder="Senha da sala (se privado)">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold text-lg hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+                        Entrar na Sala
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CHAT VIEW ==================== -->
+    <div id="view-chat" class="view min-h-screen h-screen flex flex-col relative">
+        <!-- Chat Header -->
+        <header class="flex-shrink-0 flex items-center justify-between px-4 md:px-6 py-3 bg-dark-800/80 backdrop-blur-xl border-b border-dark-600 z-20">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-dark-600 transition-colors">
+                    <i data-lucide="users" class="w-5 h-5 text-gray-400"></i>
+                </button>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-purple-400 flex items-center justify-center">
+                    <i data-lucide="hash" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h3 id="chat-room-name" class="font-bold text-white"></h3>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="chat-online-count" class="text-xs text-gray-400">1 online</span>
+                        <span id="chat-room-type" class="text-xs text-gray-500 ml-1"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="btn-clear-chat" onclick="handleClearChat()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors text-sm">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Limpar</span>
+                </button>
+                <button onclick="handleLeaveRoom()" class="p-2 rounded-lg hover:bg-dark-600 transition-colors group">
+                    <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover:text-red-400 transition-colors"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat Body -->
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Messages Area -->
+            <main id="messages-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-1 scroll-smooth">
+                <div id="messages-empty" class="flex flex-col items-center justify-center h-full text-center">
+                    <div class="w-20 h-20 rounded-full bg-dark-600 flex items-center justify-center mb-4">
+                        <i data-lucide="message-circle" class="w-10 h-10 text-gray-500"></i>
+                    </div>
+                    <p class="text-gray-400 text-lg font-medium">Nenhuma mensagem ainda</p>
+                    <p class="text-gray-500 text-sm mt-1">Seja o primeiro a enviar uma mensagem!</p>
+                </div>
+                <div id="messages-list"></div>
+            </main>
+
+            <!-- Sidebar - Online Users -->
+            <aside id="sidebar" class="sidebar hidden lg:flex flex-col w-64 bg-dark-800/50 backdrop-blur-xl border-l border-dark-600">
+                <div class="p-4 border-b border-dark-600">
+                    <h4 class="font-semibold text-gray-300 flex items-center gap-2">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        Membros Online
+                    </h4>
+                </div>
+                <div id="users-list" class="flex-1 overflow-y-auto p-3 space-y-1"></div>
+            </aside>
+        </div>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" onclick="toggleSidebar()"></div>
+        <div id="sidebar-mobile" class="fixed right-0 top-0 bottom-0 w-72 bg-dark-800 backdrop-blur-xl border-l border-dark-600 z-40 transform translate-x-full transition-transform duration-300 lg:hidden">
+            <div class="p-4 border-b border-dark-600 flex items-center justify-between">
+                <h4 class="font-semibold text-gray-300 flex items-center gap-2">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    Membros Online
+                </h4>
+                <button onclick="toggleSidebar()" class="p-1.5 rounded-lg hover:bg-dark-600 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-gray-400"></i>
+                </button>
+            </div>
+            <div id="users-list-mobile" class="flex-1 overflow-y-auto p-3 space-y-1"></div>
+        </div>
+
+        <!-- Disappearing Message Bar -->
+        <div id="disappear-bar" class="hidden flex-shrink-0 px-4 py-2 bg-amber-500/10 border-t border-amber-500/20 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-amber-400 text-sm">
+                <i data-lucide="timer" class="w-4 h-4"></i>
+                <span>Mensagens temporárias: <strong id="disappear-timer-label">30s</strong></span>
+            </div>
+            <button onclick="toggleDisappearing()" class="text-amber-400 hover:text-amber-300 text-sm font-medium">Desativar</button>
+        </div>
+
+        <!-- Recording Bar -->
+        <div id="recording-bar" class="hidden flex-shrink-0 px-4 py-3 bg-red-500/10 border-t border-red-500/20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="text-red-400 text-sm font-medium">Gravando... <span id="recording-time">0:00</span></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="cancelRecording()" class="px-3 py-1 rounded-lg bg-dark-600 text-gray-300 hover:bg-dark-500 transition-colors text-sm">Cancelar</button>
+                <button onclick="stopRecording()" class="px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors text-sm font-medium">Enviar</button>
+            </div>
+        </div>
+
+        <!-- Image Preview -->
+        <div id="image-preview-bar" class="hidden flex-shrink-0 px-4 py-3 bg-dark-700 border-t border-dark-600">
+            <div class="flex items-center gap-3">
+                <img id="image-preview-thumb" class="w-14 h-14 rounded-lg object-cover" src="" alt="">
+                <div class="flex-1 min-w-0">
+                    <p id="image-preview-name" class="text-sm text-gray-300 truncate"></p>
+                    <p id="image-preview-size" class="text-xs text-gray-500"></p>
+                </div>
+                <button onclick="cancelImage()" class="p-1.5 rounded-lg hover:bg-dark-500 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-gray-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="flex-shrink-0 p-3 md:p-4 bg-dark-800/80 backdrop-blur-xl border-t border-dark-600">
+            <div class="flex items-end gap-2 max-w-4xl mx-auto">
+                <!-- Disappearing Toggle -->
+                <button onclick="toggleDisappearing()" title="Mensagens temporárias" class="flex-shrink-0 p-2.5 rounded-xl hover:bg-dark-600 transition-colors group" id="btn-disappear">
+                    <i data-lucide="timer" class="w-5 h-5 text-gray-500 group-hover:text-amber-400 transition-colors"></i>
+                </button>
+
+                <!-- Image Upload -->
+                <button onclick="document.getElementById('image-input').click()" title="Enviar imagem" class="flex-shrink-0 p-2.5 rounded-xl hover:bg-dark-600 transition-colors group">
+                    <i data-lucide="image" class="w-5 h-5 text-gray-500 group-hover:text-cyan-400 transition-colors"></i>
+                </button>
+                <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+
+                <!-- Audio Record -->
+                <button onclick="startRecording()" title="Gravar áudio" class="flex-shrink-0 p-2.5 rounded-xl hover:bg-dark-600 transition-colors group" id="btn-audio">
+                    <i data-lucide="mic" class="w-5 h-5 text-gray-500 group-hover:text-red-400 transition-colors"></i>
+                </button>
+
+                <!-- Text Input -->
+                <div class="flex-1 relative">
+                    <input type="text" id="message-input"
+                        class="w-full px-4 py-2.5 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-sm md:text-base"
+                        placeholder="Digite sua mensagem..." autocomplete="off"
+                        onkeydown="if(event.key==='Enter')sendMessage()">
+                </div>
+
+                <!-- Send Button -->
+                <button onclick="sendMessage()" class="flex-shrink-0 p-2.5 rounded-xl bg-gradient-to-r from-accent to-purple-400 text-white hover:shadow-lg hover:shadow-accent-glow transition-all duration-300 hover:scale-105 active:scale-95">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Disappear Timer Selector -->
+            <div id="disappear-selector" class="hidden mt-3 flex items-center gap-2 justify-center flex-wrap">
+                <span class="text-xs text-gray-500 mr-1">Tempo:</span>
+                <button onclick="setDisappearTime(5)" class="disappear-time-btn px-3 py-1 rounded-full text-xs font-medium transition-all" data-time="5">5s</button>
+                <button onclick="setDisappearTime(10)" class="disappear-time-btn px-3 py-1 rounded-full text-xs font-medium transition-all" data-time="10">10s</button>
+                <button onclick="setDisappearTime(30)" class="disappear-time-btn active px-3 py-1 rounded-full text-xs font-medium transition-all" data-time="30">30s</button>
+                <button onclick="setDisappearTime(60)" class="disappear-time-btn px-3 py-1 rounded-full text-xs font-medium transition-all" data-time="60">1min</button>
+                <button onclick="setDisappearTime(300)" class="disappear-time-btn px-3 py-1 rounded-full text-xs font-medium transition-all" data-time="300">5min</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div id="image-viewer" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4" onclick="closeImageViewer(event)">
+        <button class="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" onclick="closeImageViewer()">
+            <i data-lucide="x" class="w-6 h-6 text-white"></i>
+        </button>
+        <img id="image-viewer-img" class="max-w-full max-h-full rounded-lg object-contain" src="" alt="">
+    </div>
+
+    <!-- Disappear Timer Modal -->
+    <div id="disappear-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50">
+        <div class="glass-card rounded-2xl p-6 max-w-sm w-full text-center animate-fade-in-up">
+            <i data-lucide="eye" class="w-10 h-10 text-amber-400 mx-auto mb-3"></i>
+            <h3 class="text-lg font-bold mb-2">Mensagem Temporária</h3>
+            <p class="text-gray-400 text-sm mb-4">Esta mensagem desaparecerá após ser visualizada.</p>
+            <button onclick="viewDisappearingMessage()" class="px-6 py-2 rounded-xl bg-gradient-to-r from-accent to-purple-400 text-white font-semibold hover:shadow-lg transition-all">
+                Visualizar
+            </button>
+            <button onclick="cancelDisappearingView()" class="block mx-auto mt-3 text-gray-400 hover:text-white text-sm transition-colors">
+                Ignorar
+            </button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+<script src="https://deepsite.hf.co/deepsite-badge.js"></script>
+</body>
+</html>
